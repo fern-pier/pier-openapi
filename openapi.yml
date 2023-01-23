@@ -707,7 +707,7 @@ paths:
       summary: Retrieve consumer lending coverage
       security: *ref_0
   /rejection_reasons:
-    post:
+    get:
       description: >-
         Retrieve a list of valid reasons to reject an applicant, along with
         descriptions for each reason
