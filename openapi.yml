@@ -102,14 +102,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FacilityCannotBeClosed'
-      summary: Create an application
+      summary: Approve an application
       security: *ref_0
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateApplicationRequest'
+              $ref: '#/components/schemas/ApproveApplicationRequest'
   /applications/{application_id}/reject:
     post:
       description: >-
@@ -1129,6 +1129,33 @@ components:
           description: The id of the borrower you're requesting to retrieve
       required:
         - application_id
+    ApproveApplicationRequest:
+      type: object
+      properties:
+        offer:
+          $ref: '#/components/schemas/LineOfCreditOffer'
+        id:
+          $ref: '#/components/schemas/ApplicationId'
+        borrower_id:
+          $ref: '#/components/schemas/ConsumerBorrowerId'
+        credit_type:
+          $ref: '#/components/schemas/CreditType'
+        status:
+          $ref: '#/components/schemas/ApplicationStatus'
+        created_on:
+          type: string
+          format: date-time
+        decisioned_on:
+          type: string
+          format: date-time
+      required:
+        - offer
+        - id
+        - borrower_id
+        - credit_type
+        - status
+        - created_on
+        - decisioned_on
     BusinessBorrowerId:
       type: string
     BeneficialOwnerId:
