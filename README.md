@@ -1,4 +1,4 @@
-# {Company} {Api Name} OpenAPI Description
+# Pier API OpenAPI Description
 
 This repository contains the [OpenAPI description](/openapi.yml) for <{docs_url}>.
 
@@ -10,4 +10,4 @@ From the [OpenAPI Specification](https://github.com/OAI/OpenAPI-Specification):
 
 ## Issues
 
-Feel free to [leave an issue](https://github.com/fern-{company}/{company}-openapi/issues) on this repo.
+Feel free to [leave an issue](https://github.com/fern-pier/pier-openapi/issues) on this repo.
