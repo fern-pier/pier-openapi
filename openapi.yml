@@ -24,12 +24,12 @@ paths:
                     credit_type: installment_loan
                     status: pending
                     created_on: '2022-12-31T01:36:52.606Z'
-        '404':
+        '400':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApplicationNotFound'
+                $ref: '#/components/schemas/FacilityCannotBeClosed'
               examples:
                 Example1:
                   value:
@@ -79,12 +79,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Application'
-        '404':
+        '400':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApplicationNotFound'
+                $ref: '#/components/schemas/FacilityCannotBeClosed'
       summary: Create an application
       security: *ref_0
       requestBody:
@@ -114,12 +114,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Application'
-        '404':
+        '400':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApplicationNotFound'
+                $ref: '#/components/schemas/FacilityCannotBeClosed'
       summary: Reject an application
       security: *ref_0
       requestBody:
@@ -147,12 +147,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Application'
-        '404':
+        '400':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApplicationNotFound'
+                $ref: '#/components/schemas/FacilityCannotBeClosed'
       summary: Get an application by ID
       security: *ref_0
   /applications/applications:
@@ -227,12 +227,12 @@ paths:
                     phone: '4152556465'
                     state_of_incorporation: DE
                     created_on: '2022-12-30T07:23:36.665Z'
-        '404':
+        '400':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApplicationNotFound'
+                $ref: '#/components/schemas/FacilityCannotBeClosed'
       summary: Create a business borrower
       security: *ref_0
       requestBody:
@@ -360,12 +360,12 @@ paths:
                     phone: '4152556465'
                     state_of_incorporation: DE
                     created_on: '2022-12-30T07:23:36.665Z'
-        '404':
+        '400':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApplicationNotFound'
+                $ref: '#/components/schemas/FacilityCannotBeClosed'
       summary: Update a business borrower
       security: *ref_0
       requestBody:
@@ -453,12 +453,12 @@ paths:
                     kyc_completion_date: '2022-11-15'
                     created_on: '2022-12-31T00:58:47.828Z'
                     phone: '2065886919'
-        '404':
+        '400':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApplicationNotFound'
+                $ref: '#/components/schemas/FacilityCannotBeClosed'
               examples:
                 Example1:
                   value:
@@ -499,12 +499,12 @@ paths:
                     kyc_completion_date: '2022-11-15'
                     created_on: '2022-12-31T00:58:47.828Z'
                     phone: '2065886919'
-        '404':
+        '400':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApplicationNotFound'
+                $ref: '#/components/schemas/FacilityCannotBeClosed'
               examples:
                 Example1:
                   value:
@@ -608,12 +608,12 @@ paths:
                     kyc_completion_date: '2022-11-15'
                     created_on: '2022-12-31T00:58:47.828Z'
                     phone: '2065886919'
-        '404':
+        '400':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApplicationNotFound'
+                $ref: '#/components/schemas/FacilityCannotBeClosed'
               examples:
                 Example1:
                   value:
@@ -674,8 +674,140 @@ paths:
                   ssn: '999888777'
                   kyc_completion_date: '2022-11-15'
                   phone: '2065886919'
+  /coverage/commercial:
+    get:
+      description: Retrieve state-by-state commercial coverage
+      operationId: CoverageAndUtilityService.retrieveCommercialCoverage
+      tags:
+        - Coverage
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommercialCoverage'
+      summary: Retrieve commercial lending coverage
+      security: *ref_0
+  /coverage/consumer:
+    get:
+      description: Retrieve state-by-state consumer coverage list
+      operationId: CoverageAndUtilityService.retrieveConsumerCoverage
+      tags:
+        - Coverage
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema: {}
+      summary: Retrieve consumer lending coverage
+      security: *ref_0
+  /rejection_reasons:
+    post:
+      description: >-
+        Retrieve a list of valid reasons to reject an applicant, along with
+        descriptions for each reason
+      operationId: CoverageAndUtilityService.retrieveRejectionReasons
+      tags:
+        - Coverage
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RejectionReasons'
+      summary: Retrieve rejection reasons
+      security: *ref_0
+  /facilities/facilities:
+    post:
+      description: >-
+        A facility can be created for a given loan agreement with a status of
+        `signed`
+      operationId: FacilitiesService.create
+      tags:
+        - Facilities
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Facility'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityCannotBeClosed'
+      summary: Create a facility
+      security: *ref_0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateFacilityRequest'
+    get:
+      description: List all facilities on your account
+      operationId: FacilitiesService.listAll
+      tags:
+        - Facilities
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Facility'
+      summary: List all facilities
+      security: *ref_0
+  /facilities/facilities/{facility_id}/close:
+    post:
+      description: Closes an active facility by setting its status to `closed`
+      operationId: FacilitiesService.close
+      tags:
+        - Facilities
+      parameters:
+        - name: facility_id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/FacilityId'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Facility'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityCannotBeClosed'
+      summary: Close a facility
+      security: *ref_0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CloseFacilityRequest'
   /loan_agreements/:
     post:
+      description: >-
+        A loan agreement can be created for an application with a status of
+        approved. Expect 4-8 seconds of latency
       operationId: LoansService.create
       tags:
         - Loans
@@ -687,12 +819,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LoanAgreement'
-        '404':
+        '400':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApplicationNotFound'
+                $ref: '#/components/schemas/FacilityCannotBeClosed'
       summary: Create a loan agreement
       security: *ref_0
       requestBody:
@@ -701,6 +833,85 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateLoanAgreementRequest'
+    get:
+      description: List all loan agreements on your account
+      operationId: LoansService.getAll
+      tags:
+        - Loans
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoanAgreement'
+      summary: List all loan agreements
+      security: *ref_0
+  /loan_agreements/{loan_agreement_id}/sign:
+    post:
+      description: >-
+        Electronically signs a loan document and updates the application's
+        status to `accepted`
+      operationId: LoansService.sign
+      tags:
+        - Loans
+      parameters:
+        - name: loan_agreement_id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/LoanAgreementId'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SignLoanAgreementResponse'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityCannotBeClosed'
+      summary: Sign a loan agreement
+      security: *ref_0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignLoanAgreementRequest'
+  /loan_agreements/{loan_agreement_id}:
+    get:
+      description: Retrieve a loan agreement by its id
+      operationId: LoansService.get
+      tags:
+        - Loans
+      parameters:
+        - name: loan_agreement_id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/LoanAgreementId'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoanAgreement'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityCannotBeClosed'
+      summary: Get a loan agreement by id
+      security: *ref_0
 components:
   schemas:
     ApplicationId:
@@ -758,12 +969,6 @@ components:
           description: >-
             If the application is approved, an object containing the credit
             offer details
-    CreditType:
-      type: string
-      enum:
-        - installment_loan
-        - revolving_line_of_credit
-        - closed_line_of_credit
     LineOfCreditOffer:
       type: object
       properties:
@@ -1244,8 +1449,6 @@ components:
       required:
         - reason
         - reason_message
-    id:
-      type: string
     Address:
       type: object
       properties:
@@ -1266,6 +1469,12 @@ components:
         - city
         - state
         - zip
+    CreditType:
+      type: string
+      enum:
+        - installment_loan
+        - revolving_line_of_credit
+        - closed_line_of_credit
     BaseErrorBody:
       type: object
       properties:
@@ -1326,25 +1535,191 @@ components:
       properties: {}
       allOf:
         - $ref: '#/components/schemas/BaseErrorBody'
+    DocumentCannotBeCreated:
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/BaseErrorBody'
+    DocumentCannotBeSigned:
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/BaseErrorBody'
+    DocumentNotFound:
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/BaseErrorBody'
+    FacilityCannotBeCreated:
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/BaseErrorBody'
+    FacilityAlreadyExists:
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/BaseErrorBody'
+    FacilityNotFound:
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/BaseErrorBody'
+    FacilityCannotBeClosed:
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/BaseErrorBody'
+    CommercialCoverage: {}
+    RejectionReasons:
+      type: array
+      items:
+        type: object
+        additionalProperties:
+          type: string
+    FacilityId:
+      type: string
+    Facility:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/FacilityId'
+        application_id:
+          $ref: '#/components/schemas/ApplicationId'
+          description: >-
+            The `application_id` of the corresponding loan application for the
+            facility
+        borrower_id:
+          $ref: '#/components/schemas/ConsumerBorrowerId'
+          description: The `borrower_id` of the corresponding borrower the facility is for
+        loan_agreement_id:
+          type: string
+          description: >-
+            The `loan_agreement_id` of the corresponding loan agreement the
+            facility is for
+        credit_type:
+          $ref: '#/components/schemas/CreditType'
+          description: The type of credit production.
+        created_on:
+          type: string
+          format: date-time
+          description: Timestamp the loan agreement object is created on
+        status:
+          $ref: '#/components/schemas/CreditStatus'
+          description: The status of the facility.
+        terms:
+          $ref: '#/components/schemas/LineOfCreditOffer'
+          description: An object containing a summary of the terms of the facility.
+      required:
+        - id
+        - application_id
+        - borrower_id
+        - loan_agreement_id
+        - credit_type
+        - created_on
+        - status
+        - terms
+    CreditStatus:
+      type: string
+      enum:
+        - active
+        - closed
+    CreateFacilityRequest:
+      type: object
+      properties:
+        loan_agreement_id:
+          $ref: '#/components/schemas/LoanAgreementId'
+          description: >-
+            The `loan_agreement_id` of the loan agreement to create a facility
+            for
+      required:
+        - loan_agreement_id
+    CloseFacilityRequest:
+      type: object
+      properties:
+        facility_id:
+          $ref: '#/components/schemas/FacilityId'
+          description: The `facility_id` of the facility to close
+      required:
+        - facility_id
     LoanAgreementId:
       type: string
     CreateLoanAgreementRequest:
       type: object
       properties:
-        id:
-          $ref: '#/components/schemas/LoanAgreementId'
         application_id:
           $ref: '#/components/schemas/ApplicationId'
+          description: >-
+            The `application_id` of the application to create the loan agreement
+            for
       required:
-        - id
         - application_id
     LoanAgreement:
       type: object
       properties:
         id:
           $ref: '#/components/schemas/LoanAgreementId'
+        application_id:
+          type: string
+          description: >-
+            The `application_id` of the corresponding loan application the
+            agreement is for
+        created_on:
+          type: string
+          description: Timestamp the loan agreement object is created on
+        document_url:
+          type: string
+          description: Url where the loan agreement document is hosted
+        signature_timestamp:
+          type: string
+          description: Timestamp of when e-signature is completed
+        status:
+          $ref: '#/components/schemas/LoanAgreementStatus'
+          description: The status of the document
       required:
         - id
+        - application_id
+        - created_on
+        - document_url
+        - signature_timestamp
+        - status
+    LoanAgreementStatus:
+      type: string
+      enum:
+        - pending_signature
+        - signed
+        - expired
+    SignLoanAgreementRequest:
+      type: object
+      properties:
+        loan_agreement_id:
+          $ref: '#/components/schemas/LoanAgreementId'
+      required:
+        - loan_agreement_id
+    SignLoanAgreementResponse:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/LoanAgreementStatus'
+        id:
+          $ref: '#/components/schemas/LoanAgreementId'
+        application_id:
+          $ref: '#/components/schemas/ApplicationId'
+        signature_timestamp:
+          type: string
+          format: date-time
+        document_url:
+          type: string
+        created_on:
+          type: string
+          format: date-time
+      required:
+        - status
+        - id
+        - application_id
+        - signature_timestamp
+        - document_url
+        - created_on
   securitySchemes:
     BasicAuth:
       type: http
