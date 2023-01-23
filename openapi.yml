@@ -61,6 +61,23 @@ paths:
                   borrower_id: bor_a1d0c30d77104f35b4c842b99132624e
                   credit_type: revolving_line_of_credit
                   requested_amount: 200000
+    get:
+      description: List all applications associated with your account
+      operationId: ApplicationsService.getAll
+      tags:
+        - Applications
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Application'
+      summary: List all applications
+      security: *ref_0
   /applications/{application_id}/approve:
     post:
       operationId: ApplicationsService.approve
@@ -155,25 +172,7 @@ paths:
                 $ref: '#/components/schemas/FacilityCannotBeClosed'
       summary: Get an application by ID
       security: *ref_0
-  /applications/applications:
-    get:
-      description: List all applications associated with your account
-      operationId: ApplicationsService.getAll
-      tags:
-        - Applications
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Application'
-      summary: List all applications
-      security: *ref_0
-  /borrowers/borrowers:
+  /borrowers/business:
     post:
       description: Creates a business borrower. Business borrowers must have a unique EIN.
       operationId: BorrowersService.createBusinessBorrower
@@ -279,24 +278,7 @@ paths:
                   kyb_completion_date: '2022-11-15'
                   phone: '4152556465'
                   state_of_incorporation: DE
-    get:
-      description: Retrieve all borrowers associated with your account
-      operationId: BorrowersService.getAllBorrowers
-      tags:
-        - Borrowers
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ConsumerBorrower'
-      summary: List all borrowers
-      security: *ref_0
-  /borrowers/borrowers/{borrower_id}:
+  /borrowers/business/{borrower_id}:
     patch:
       description: >-
         Updates an existing borrower. The full borrower object needs to be
@@ -412,62 +394,7 @@ paths:
                   kyb_completion_date: '2022-11-15'
                   phone: '4152556465'
                   state_of_incorporation: DE
-    get:
-      description: Retrieve one borrower by id
-      operationId: BorrowersService.getBorrower
-      tags:
-        - Borrowers
-      parameters:
-        - name: borrower_id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/ConsumerBorrowerId'
-          examples:
-            Example1:
-              value: bor_a1d0c30d77104f35b4c842b99132624e
-            Example2:
-              value: bor_a1d0c30d77104f35b4c842b99132624e
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ConsumerBorrower'
-              examples:
-                Example1:
-                  value:
-                    address:
-                      line_1: 15 Main Street
-                      line_2: null
-                      city: Austin
-                      state: TX
-                      zip: '73301'
-                    id: bor_a1d0c30d77104f35b4c842b99132624e
-                    date_of_birth: '1991-12-18'
-                    email: jdough@acme.co
-                    first_name: Jane
-                    last_name: Dough
-                    ssn: '999888777'
-                    kyc_completion_date: '2022-11-15'
-                    created_on: '2022-12-31T00:58:47.828Z'
-                    phone: '2065886919'
-        '400':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FacilityCannotBeClosed'
-              examples:
-                Example1:
-                  value:
-                    error_type: BORROWER_ERROR
-                    error_code: BORROWER_NOT_FOUND
-                    error_message: The borrower resource does not exist
-      summary: Retrieve a borrower by id
-      security: *ref_0
-  /borrowers/borrowers/consumer:
+  /borrowers/consumer:
     post:
       description: Creates a consumer borrower. Consumer borrower's must have a unique SSN.
       operationId: BorrowersService.createConsumerBorrower
@@ -565,7 +492,7 @@ paths:
                   ssn: '999888777'
                   kyc_completion_date: '2022-11-15'
                   phone: '2065886919'
-  /borrowers/borrowers/consumer/{borrower_id}:
+  /borrowers/consumer/{borrower_id}:
     patch:
       operationId: BorrowersService.updateConsumerBorrower
       tags:
@@ -674,6 +601,80 @@ paths:
                   ssn: '999888777'
                   kyc_completion_date: '2022-11-15'
                   phone: '2065886919'
+  /borrowers/{borrower_id}:
+    get:
+      description: Retrieve one borrower by id
+      operationId: BorrowersService.getBorrower
+      tags:
+        - Borrowers
+      parameters:
+        - name: borrower_id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ConsumerBorrowerId'
+          examples:
+            Example1:
+              value: bor_a1d0c30d77104f35b4c842b99132624e
+            Example2:
+              value: bor_a1d0c30d77104f35b4c842b99132624e
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsumerBorrower'
+              examples:
+                Example1:
+                  value:
+                    address:
+                      line_1: 15 Main Street
+                      line_2: null
+                      city: Austin
+                      state: TX
+                      zip: '73301'
+                    id: bor_a1d0c30d77104f35b4c842b99132624e
+                    date_of_birth: '1991-12-18'
+                    email: jdough@acme.co
+                    first_name: Jane
+                    last_name: Dough
+                    ssn: '999888777'
+                    kyc_completion_date: '2022-11-15'
+                    created_on: '2022-12-31T00:58:47.828Z'
+                    phone: '2065886919'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityCannotBeClosed'
+              examples:
+                Example1:
+                  value:
+                    error_type: BORROWER_ERROR
+                    error_code: BORROWER_NOT_FOUND
+                    error_message: The borrower resource does not exist
+      summary: Retrieve a borrower by id
+      security: *ref_0
+  /borrowers/:
+    get:
+      description: Retrieve all borrowers associated with your account
+      operationId: BorrowersService.getAllBorrowers
+      tags:
+        - Borrowers
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ConsumerBorrower'
+      summary: List all borrowers
+      security: *ref_0
   /coverage/commercial:
     get:
       description: Retrieve state-by-state commercial coverage
@@ -723,7 +724,7 @@ paths:
                 $ref: '#/components/schemas/RejectionReasons'
       summary: Retrieve rejection reasons
       security: *ref_0
-  /facilities/facilities:
+  /facilities/:
     post:
       description: >-
         A facility can be created for a given loan agreement with a status of
@@ -770,7 +771,7 @@ paths:
                   $ref: '#/components/schemas/Facility'
       summary: List all facilities
       security: *ref_0
-  /facilities/facilities/{facility_id}/close:
+  /facilities/{facility_id}/close:
     post:
       description: Closes an active facility by setting its status to `closed`
       operationId: FacilitiesService.close
