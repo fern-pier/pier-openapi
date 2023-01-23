@@ -1,6 +1,6 @@
 # Pier API OpenAPI spec
 
-This repository contains the [OpenAPI description](/openapi.yml) for <https://pier.mintlify.app/introduction>.
+This repository contains the [OpenAPI spec](/openapi.yml) for <https://pier.mintlify.app/introduction>.
 
 ## What is OpenAPI?
 
