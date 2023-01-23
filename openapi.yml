@@ -3,6 +3,176 @@ info:
   title: api
   version: ''
 paths:
+  /applications/:
+    post:
+      operationId: ApplicationsService.create
+      tags:
+        - Applications
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+              examples:
+                Example1:
+                  value:
+                    id: app_f0467657bba948e6a87292e182132848
+                    borrower_id: bor_a1d0c30d77104f35b4c842b99132624e
+                    credit_type: installment_loan
+                    status: pending
+                    created_on: '2022-12-31T01:36:52.606Z'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationNotFound'
+              examples:
+                Example1:
+                  value:
+                    error_type: BORROWER_ERROR
+                    error_code: BORROWER_NOT_FOUND
+                    error_message: The borrower resource does not exist
+      summary: Create an application
+      security: &ref_0
+        - BasicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateApplicationRequest'
+            examples:
+              Example1:
+                value:
+                  borrower_id: bor_a1d0c30d77104f35b4c842b99132624e
+                  credit_type: revolving_line_of_credit
+                  requested_amount: 200000
+              Example2:
+                value:
+                  borrower_id: bor_a1d0c30d77104f35b4c842b99132624e
+                  credit_type: revolving_line_of_credit
+                  requested_amount: 200000
+              Example3:
+                value:
+                  borrower_id: bor_a1d0c30d77104f35b4c842b99132624e
+                  credit_type: revolving_line_of_credit
+                  requested_amount: 200000
+  /applications/{application_id}/approve:
+    post:
+      operationId: ApplicationsService.approve
+      tags:
+        - Applications
+      parameters:
+        - name: application_id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ApplicationId'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationNotFound'
+      summary: Create an application
+      security: *ref_0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateApplicationRequest'
+  /applications/{application_id}/reject:
+    post:
+      description: >-
+        Updates the status of a credit application to `REJECTED` and returns a
+        user readable rejection reason, to be used in the adverse action notice
+      operationId: ApplicationsService.reject
+      tags:
+        - Applications
+      parameters:
+        - name: application_id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ApplicationId'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationNotFound'
+      summary: Reject an application
+      security: *ref_0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RejectRequest'
+  /applications/{application_id}:
+    get:
+      description: Get an application by its id
+      operationId: ApplicationsService.get
+      tags:
+        - Applications
+      parameters:
+        - name: application_id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ApplicationId'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationNotFound'
+      summary: Get an application by ID
+      security: *ref_0
+  /applications/applications:
+    get:
+      description: List all applications associated with your account
+      operationId: ApplicationsService.getAll
+      tags:
+        - Applications
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Application'
+      summary: List all applications
+      security: *ref_0
   /borrowers/borrowers:
     post:
       description: Creates a business borrower. Business borrowers must have a unique EIN.
@@ -62,10 +232,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BorrowerNotFound'
+                $ref: '#/components/schemas/ApplicationNotFound'
       summary: Create a business borrower
-      security: &ref_0
-        - BasicAuth: []
+      security: *ref_0
       requestBody:
         required: true
         content:
@@ -196,7 +365,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BorrowerNotFound'
+                $ref: '#/components/schemas/ApplicationNotFound'
       summary: Update a business borrower
       security: *ref_0
       requestBody:
@@ -289,7 +458,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BorrowerNotFound'
+                $ref: '#/components/schemas/ApplicationNotFound'
               examples:
                 Example1:
                   value:
@@ -335,7 +504,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BorrowerNotFound'
+                $ref: '#/components/schemas/ApplicationNotFound'
               examples:
                 Example1:
                   value:
@@ -444,7 +613,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BorrowerNotFound'
+                $ref: '#/components/schemas/ApplicationNotFound'
               examples:
                 Example1:
                   value:
@@ -505,8 +674,255 @@ paths:
                   ssn: '999888777'
                   kyc_completion_date: '2022-11-15'
                   phone: '2065886919'
+  /loan_agreements/:
+    post:
+      operationId: LoansService.create
+      tags:
+        - Loans
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoanAgreement'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationNotFound'
+      summary: Create a loan agreement
+      security: *ref_0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLoanAgreementRequest'
 components:
   schemas:
+    ApplicationId:
+      type: string
+    ApplicationStatus:
+      type: string
+      enum:
+        - pending
+        - approved
+        - accepted
+        - rejected
+        - expired
+    CreateApplicationRequest:
+      type: object
+      properties:
+        borrower_id:
+          type: string
+          description: The `borrower_id` of the borrower the application is for
+          example: bor_a1d0c30d77104f35b4c842b99132624e
+        credit_type:
+          type: string
+          description: The type of credit product.
+          example: revolving_line_of_credit
+        requested_amount:
+          type: integer
+          description: >-
+            If the borrower requests an amount in their application, the
+            requested loan or credit line amount (in cents).
+      required:
+        - borrower_id
+        - credit_type
+    Application:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/ApplicationId'
+        borrower_id:
+          $ref: '#/components/schemas/ConsumerBorrowerId'
+          description: The `borrower_id` of the borrower the application belongs to
+        credit_type:
+          $ref: '#/components/schemas/CreditType'
+          description: The type of credit product.
+        status:
+          $ref: '#/components/schemas/ApplicationStatus'
+        created_on:
+          type: string
+          format: date-time
+          description: Timestamp the application object is created on
+        decisioned_on:
+          type: string
+          format: date-time
+          description: Timestamp when the application is either approved or rejected on
+        offer:
+          $ref: '#/components/schemas/LoanOffer'
+          description: >-
+            If the application is approved, an object containing the credit
+            offer details
+    CreditType:
+      type: string
+      enum:
+        - installment_loan
+        - revolving_line_of_credit
+        - closed_line_of_credit
+    LineOfCreditOffer:
+      type: object
+      properties:
+        amount:
+          type: integer
+          description: >-
+            The amount (in cents) of the credit line offer (e.g. '200000' for
+            $2,000.00)
+          example: 1000000
+        apr:
+          type: integer
+          description: >-
+            The apr (in basis points) of the credit line offer (e.g. '750' for
+            7.50%)
+          example: 0
+        annual_fee:
+          type: integer
+          description: The annual fee charged for the credit line (e.g. '5000' for $50.00)
+          example: 0
+        billing_cycle:
+          type: integer
+          description: >
+            The time in days between the last statement's closing date and the
+            next statement's closing date. 
+
+            For consumer lines of credit, the minimum is '21'
+          example: 30
+        finance_charge:
+          type: integer
+          description: >-
+            If your platform charges a monthly finance charge for access to the
+            line, the amount in cents
+          example: 0
+        grace_period:
+          type: integer
+          description: >-
+            The time in days between the end of a billing cycle and the bill's
+            due date. For consumer lines of credit, the minimum is '21'
+          example: 21
+        grace_period_interest_rate:
+          type: integer
+          description: >-
+            The interest rate (in basis points) charged during the grace period.
+            Must be '0' for consumer lines of credit. Defaults to `0` if omitted
+        interest_rate:
+          type: integer
+          description: >-
+            The interest rate (in basis points) of the loan or credit line offer
+            (e.g. '750' for 7.50%)
+          example: 0
+        introductory_offer_interest_rate:
+          type: integer
+          description: >-
+            If you offer an introductory period with a reduced interest rate,
+            the interest rate in basis points
+        introductory_offer_interest_rate_term:
+          type: integer
+          description: >-
+            If you offer an introductory period with a reduced interest rate,
+            the term in months
+        late_payment_fee:
+          type: integer
+          description: >-
+            The fee charged if a borrower misses the payment due date, in cents
+            (e.g. '2500' for $25.00)
+          example: 0
+        origination_fee:
+          type: integer
+          description: >-
+            The origination fee charged to originate the line in cents (e.g.
+            '20000' for $200)
+          example: 0
+        term:
+          type: integer
+          description: The term of the line in months
+          example: 24
+      required:
+        - amount
+        - apr
+        - annual_fee
+        - billing_cycle
+        - finance_charge
+        - grace_period
+        - interest_rate
+        - late_payment_fee
+        - origination_fee
+        - term
+    LoanOffer:
+      type: object
+      properties:
+        amount:
+          type: integer
+        annual_fee:
+          type: integer
+        apr:
+          type: integer
+        finance_charge:
+          type: integer
+        grace_period:
+          type: integer
+        interest_rate:
+          type: integer
+        origination_fee:
+          type: integer
+        repayment_frequency:
+          type: string
+        late_payment_fee:
+          type: integer
+        term:
+          type: integer
+      required:
+        - amount
+        - annual_fee
+        - apr
+        - finance_charge
+        - grace_period
+        - interest_rate
+        - origination_fee
+        - repayment_frequency
+        - late_payment_fee
+        - term
+    RejectRequest:
+      type: object
+      properties:
+        rejection_reason:
+          $ref: '#/components/schemas/RejectionReason'
+      required:
+        - rejection_reason
+    RejectionReason:
+      type: string
+      enum:
+        - income_too_low
+        - bank_balance_too_low
+        - income_unpredictable
+        - user_account_duplicate
+        - sdb_check_failed
+        - bank_account_linking_error
+        - mla_failed
+        - iddoc_failed
+        - no_checking_or_savings_data
+        - insufficient_bank_history
+        - loan_location_no_license
+        - address_invalid
+        - income_verification_failed
+        - stacking_behavior
+        - ssn_verification_failed
+        - too_many_nsfs
+        - fraud_risk_too_high
+        - bankruptcy
+        - processor_suspended
+        - cash_flow_verification_failed
+    GetApplicationRequest:
+      type: object
+      properties:
+        application_id:
+          type: string
+          description: The id of the borrower you're requesting to retrieve
+      required:
+        - application_id
     BusinessBorrowerId:
       type: string
     BeneficialOwnerId:
@@ -905,6 +1321,30 @@ components:
       properties: {}
       allOf:
         - $ref: '#/components/schemas/BaseErrorBody'
+    ApplicationNotFound:
+      type: object
+      properties: {}
+      allOf:
+        - $ref: '#/components/schemas/BaseErrorBody'
+    LoanAgreementId:
+      type: string
+    CreateLoanAgreementRequest:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/LoanAgreementId'
+        application_id:
+          $ref: '#/components/schemas/ApplicationId'
+      required:
+        - id
+        - application_id
+    LoanAgreement:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/LoanAgreementId'
+      required:
+        - id
   securitySchemes:
     BasicAuth:
       type: http
