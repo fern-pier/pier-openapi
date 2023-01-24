@@ -1,6 +1,6 @@
 # Pier API OpenAPI spec
 
-This repository contains the [OpenAPI spec](/openapi.yml) for <https://pier.mintlify.app/introduction>.
+This repository syncs the [OpenAPI spec](/openapi.yml) to [Stoplight](https://fern-api.stoplight.io/docs/pier/99817551bfa79-create-an-application). 
 
 ## What is OpenAPI?
 
