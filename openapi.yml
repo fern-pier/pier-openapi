@@ -3,7 +3,7 @@ info:
   title: Pier API
   version: ''
 paths:
-  /applications/:
+  /applications:
     post:
       operationId: ApplicationsService.create
       tags:
@@ -30,12 +30,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FacilityCannotBeClosed'
-              examples:
-                Example1:
-                  value:
-                    error_type: BORROWER_ERROR
-                    error_code: BORROWER_NOT_FOUND
-                    error_message: The borrower resource does not exist
       summary: Create an application
       security: &ref_0
         - BasicAuth: []
@@ -51,16 +45,189 @@ paths:
                   borrower_id: bor_a1d0c30d77104f35b4c842b99132624e
                   credit_type: revolving_line_of_credit
                   requested_amount: 200000
-              Example2:
+  /applications/{application_id}/approve:
+    post:
+      operationId: ApplicationsService.approve
+      tags:
+        - Applications
+      parameters:
+        - name: application_id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ApplicationId'
+          examples:
+            Example1:
+              value: app_f0467657bba948e6a87292e182132848
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+              examples:
+                Example1:
+                  value:
+                    id: app_f0467657bba948e6a87292e182132848
+                    borrower_id: bor_d965bea9f47a4b108562642dbb1dae9f
+                    credit_type: revolving_line_of_credit
+                    status: approved
+                    created_on: '2022-12-31T01:36:52.606Z'
+                    decisioned_on: '2023-01-17T05:31:52.955Z'
+                    offer:
+                      type: line_of_credit
+                      amount: 1000000
+                      apr: 0
+                      annual_fee: 0
+                      billing_cycle: 30
+                      finance_charge: 0
+                      grace_period: 21
+                      grace_period_interest_rate: 0
+                      interest_rate: 0
+                      late_payment_fee: 0
+                      origination_fee: 0
+                      term: 24
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityCannotBeClosed'
+      summary: Approve an application
+      security: *ref_0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Offer'
+            examples:
+              Example1:
                 value:
-                  borrower_id: bor_a1d0c30d77104f35b4c842b99132624e
-                  credit_type: revolving_line_of_credit
-                  requested_amount: 200000
-              Example3:
+                  type: line_of_credit
+                  amount: 1000000
+                  apr: 0
+                  annual_fee: 0
+                  billing_cycle: 30
+                  finance_charge: 0
+                  grace_period: 21
+                  grace_period_interest_rate: 0
+                  interest_rate: 0
+                  late_payment_fee: 0
+                  origination_fee: 0
+                  term: 24
+  /applications/{application_id}/reject:
+    post:
+      description: >-
+        Updates the status of a credit application to `REJECTED` and returns a
+        user readable rejection reason, to be used in the adverse action notice
+      operationId: ApplicationsService.reject
+      tags:
+        - Applications
+      parameters:
+        - name: application_id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ApplicationId'
+          examples:
+            Example1:
+              value: app_f0467657bba948e6a87292e182132848
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+              examples:
+                Example1:
+                  value:
+                    rejection_reasons:
+                      - bank_balance_too_low
+                    id: app_f0467657bba948e6a87292e182132848
+                    borrower_id: bor_1677bbbaf21a4954bb114bd9c4348d8a
+                    credit_type: installment_loan
+                    status: rejected
+                    created_on: '2022-12-31T02:20:35.934Z'
+                    decisioned_on: '2022-12-31T02:21:01.842Z'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityCannotBeClosed'
+      summary: Reject an application
+      security: *ref_0
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rejection_reason:
+                  $ref: '#/components/schemas/RejectionReason'
+              required:
+                - rejection_reason
+            examples:
+              Example1:
                 value:
-                  borrower_id: bor_a1d0c30d77104f35b4c842b99132624e
-                  credit_type: revolving_line_of_credit
-                  requested_amount: 200000
+                  rejection_reason: bank_balance_too_low
+  /applications/{application_id}:
+    get:
+      description: Get an application by its id
+      operationId: ApplicationsService.get
+      tags:
+        - Applications
+      parameters:
+        - name: application_id
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/ApplicationId'
+          examples:
+            Example1:
+              value: app_f0467657bba948e6a87292e182132848
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Application'
+              examples:
+                Example1:
+                  value:
+                    id: app_f0467657bba948e6a87292e182132848
+                    borrower_id: bor_d965bea9f47a4b108562642dbb1dae9f
+                    credit_type: revolving_line_of_credit
+                    status: approved
+                    created_on: '2022-12-31T01:36:52.606Z'
+                    decisioned_on: '2023-01-17T05:31:52.955Z'
+                    offer:
+                      type: line_of_credit
+                      amount: 1000000
+                      apr: 0
+                      annual_fee: 0
+                      billing_cycle: 30
+                      finance_charge: 0
+                      grace_period: 21
+                      grace_period_interest_rate: 0
+                      interest_rate: 0
+                      late_payment_fee: 0
+                      origination_fee: 0
+                      term: 24
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FacilityCannotBeClosed'
+      summary: Get an application by ID
+      security: *ref_0
+  /applications/:
     get:
       description: List all applications associated with your account
       operationId: ApplicationsService.getAll
@@ -76,106 +243,39 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Application'
+              examples:
+                Example1:
+                  value:
+                    - id: app_f0467657bba948e6a87292e182132848
+                      borrower_id: bor_d965bea9f47a4b108562642dbb1dae9f
+                      credit_type: revolving_line_of_credit
+                      status: approved
+                      created_on: '2022-12-31T01:36:52.606Z'
+                      decisioned_on: '2023-01-17T05:31:52.955Z'
+                      offer:
+                        type: line_of_credit
+                        amount: 1000000
+                        apr: 0
+                        annual_fee: 0
+                        billing_cycle: 30
+                        finance_charge: 0
+                        grace_period: 21
+                        grace_period_interest_rate: 0
+                        interest_rate: 0
+                        late_payment_fee: 0
+                        origination_fee: 0
+                        term: 24
+                    - id: app_f0467657bba948e6a87292e182132848
+                      borrower_id: bor_a1d0c30d77104f35b4c842b99132624e
+                      credit_type: installment_loan
+                      status: pending
+                      created_on: '2022-12-31T01:36:52.606Z'
       summary: List all applications
-      security: *ref_0
-  /applications/{application_id}/approve:
-    post:
-      operationId: ApplicationsService.approve
-      tags:
-        - Applications
-      parameters:
-        - name: application_id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/ApplicationId'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Application'
-        '400':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FacilityCannotBeClosed'
-      summary: Approve an application
-      security: *ref_0
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ApproveApplicationRequest'
-  /applications/{application_id}/reject:
-    post:
-      description: >-
-        Updates the status of a credit application to `REJECTED` and returns a
-        user readable rejection reason, to be used in the adverse action notice
-      operationId: ApplicationsService.reject
-      tags:
-        - Applications
-      parameters:
-        - name: application_id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/ApplicationId'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Application'
-        '400':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FacilityCannotBeClosed'
-      summary: Reject an application
-      security: *ref_0
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RejectRequest'
-  /applications/{application_id}:
-    get:
-      description: Get an application by its id
-      operationId: ApplicationsService.get
-      tags:
-        - Applications
-      parameters:
-        - name: application_id
-          in: path
-          required: true
-          schema:
-            $ref: '#/components/schemas/ApplicationId'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Application'
-        '400':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FacilityCannotBeClosed'
-      summary: Get an application by ID
       security: *ref_0
   /borrowers/business:
     post:
       description: Creates a business borrower. Business borrowers must have a unique EIN.
-      operationId: BorrowersService.createBusinessBorrower
+      operationId: BusinessBorrowerService.createBusinessBorrower
       tags:
         - Borrowers
       parameters: []
@@ -283,7 +383,7 @@ paths:
       description: >-
         Updates an existing borrower. The full borrower object needs to be
         supplied in the update request.
-      operationId: BorrowersService.updateBusinessBorrower
+      operationId: BusinessBorrowerService.updateBusinessBorrower
       tags:
         - Borrowers
       parameters:
@@ -397,7 +497,7 @@ paths:
   /borrowers/consumer:
     post:
       description: Creates a consumer borrower. Consumer borrower's must have a unique SSN.
-      operationId: BorrowersService.createConsumerBorrower
+      operationId: BusinessBorrowerService.createConsumerBorrower
       tags:
         - Borrowers
       parameters: []
@@ -432,12 +532,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FacilityCannotBeClosed'
-              examples:
-                Example1:
-                  value:
-                    error_type: BORROWER_ERROR
-                    error_code: DUPLICATE_SSN
-                    error_message: A borrower with that SSN already exists
       summary: Create a consumer borrower
       security: *ref_0
       requestBody:
@@ -462,39 +556,9 @@ paths:
                   ssn: '999888777'
                   kyc_completion_date: '2022-11-15'
                   phone: '2065886919'
-              Example2:
-                value:
-                  address:
-                    line_1: 15 Main Street
-                    line_2: Unit 204
-                    city: Austin
-                    state: TX
-                    zip: '73301'
-                  date_of_birth: '1991-12-18'
-                  email: jdough@acme.co
-                  first_name: Jane
-                  last_name: Dough
-                  ssn: '999888777'
-                  kyc_completion_date: '2022-11-15'
-                  phone: '2065886919'
-              Example3:
-                value:
-                  address:
-                    line_1: 15 Main Street
-                    line_2: Unit 204
-                    city: Austin
-                    state: TX
-                    zip: '73301'
-                  date_of_birth: '1991-12-18'
-                  email: jdough@acme.co
-                  first_name: Jane
-                  last_name: Dough
-                  ssn: '999888777'
-                  kyc_completion_date: '2022-11-15'
-                  phone: '2065886919'
   /borrowers/consumer/{borrower_id}:
     patch:
-      operationId: BorrowersService.updateConsumerBorrower
+      operationId: BusinessBorrowerService.updateConsumerBorrower
       tags:
         - Borrowers
       parameters:
@@ -505,10 +569,6 @@ paths:
             $ref: '#/components/schemas/ConsumerBorrowerId'
           examples:
             Example1:
-              value: bor_a1d0c30d77104f35b4c842b99132624e
-            Example2:
-              value: bor_a1d0c30d77104f35b4c842b99132624e
-            Example3:
               value: bor_a1d0c30d77104f35b4c842b99132624e
       responses:
         '200':
@@ -541,12 +601,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FacilityCannotBeClosed'
-              examples:
-                Example1:
-                  value:
-                    error_type: BORROWER_ERROR
-                    error_code: BORROWER_NOT_FOUND
-                    error_message: A borrower resource does not exist
       summary: Update a consumer borrower
       security: *ref_0
       requestBody:
@@ -571,40 +625,10 @@ paths:
                   ssn: '999888777'
                   kyc_completion_date: '2022-11-15'
                   phone: '2065886919'
-              Example2:
-                value:
-                  address:
-                    line_1: 15 Main Street
-                    line_2: Unit 204
-                    city: Austin
-                    state: TX
-                    zip: '73301'
-                  date_of_birth: '1991-12-18'
-                  email: jdough@acme.co
-                  first_name: Jane
-                  last_name: Dough
-                  ssn: '999888777'
-                  kyc_completion_date: '2022-11-15'
-                  phone: '2065886919'
-              Example3:
-                value:
-                  address:
-                    line_1: 15 Main Street
-                    line_2: Unit 204
-                    city: Austin
-                    state: TX
-                    zip: '73301'
-                  date_of_birth: '1991-12-18'
-                  email: jdough@acme.co
-                  first_name: Jane
-                  last_name: Dough
-                  ssn: '999888777'
-                  kyc_completion_date: '2022-11-15'
-                  phone: '2065886919'
   /borrowers/{borrower_id}:
     get:
       description: Retrieve one borrower by id
-      operationId: BorrowersService.getBorrower
+      operationId: BusinessBorrowerService.getBorrower
       tags:
         - Borrowers
       parameters:
@@ -615,8 +639,6 @@ paths:
             $ref: '#/components/schemas/ConsumerBorrowerId'
           examples:
             Example1:
-              value: bor_a1d0c30d77104f35b4c842b99132624e
-            Example2:
               value: bor_a1d0c30d77104f35b4c842b99132624e
       responses:
         '200':
@@ -649,18 +671,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FacilityCannotBeClosed'
-              examples:
-                Example1:
-                  value:
-                    error_type: BORROWER_ERROR
-                    error_code: BORROWER_NOT_FOUND
-                    error_message: The borrower resource does not exist
       summary: Retrieve a borrower by id
       security: *ref_0
-  /borrowers/:
+  /borrowers:
     get:
       description: Retrieve all borrowers associated with your account
-      operationId: BorrowersService.getAllBorrowers
+      operationId: BusinessBorrowerService.listAllBorrowers
       tags:
         - Borrowers
       parameters: []
@@ -672,13 +688,70 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ConsumerBorrower'
+                  $ref: '#/components/schemas/Borrower'
+              examples:
+                Example1:
+                  value:
+                    - type: business
+                      address:
+                        line_1: 15 Market St
+                        line_2: null
+                        city: San Francisco
+                        state: NJ
+                        zip: '94133'
+                      business_contact:
+                        first_name: alex
+                        last_name: montana
+                        phone: '4155555555'
+                        email: alex@acme.co
+                        title: COO
+                      beneficial_owners:
+                        - address:
+                            line_1: 15 Market St
+                            line_2: null
+                            city: San Francisco
+                            state: CA
+                            zip: '91133'
+                          date_of_birth: '1991-12-18'
+                          email: jdoe@acme.com
+                          first_name: Jane
+                          last_name: Dough
+                          percent_ownership: 2500
+                          phone: '4155555555'
+                          ssn: '123456789'
+                          id: 63ae91f8eae458cb0d79f77e
+                      id: bor_18e5a3726b3943cda2635f40e1041ba4
+                      business_name: Apple Landscaping
+                      business_type: corporation
+                      dba_name: Apple Landscaping
+                      ein: '130256721'
+                      incorporation_date: '2000-12-12'
+                      kyb_completion_date: '2022-11-15'
+                      phone: '4152556465'
+                      state_of_incorporation: DE
+                      created_on: '2022-12-30T07:23:36.665Z'
+                    - type: consumer
+                      address:
+                        line_1: 15 Main Street
+                        line_2: Unit 204
+                        city: Austin
+                        state: TX
+                        zip: '73301'
+                      date_of_birth: '1991-12-18'
+                      email: jdough@acme.co
+                      first_name: Jane
+                      last_name: Dough
+                      ssn: '999888777'
+                      kyc_completion_date: '2022-11-15'
+                      phone: '2065886919'
+                      id: bor_a1d0c30d77104f35b4c842b99132624e
+                      created_on: '2022-12-30T07:23:36.665Z'
       summary: List all borrowers
       security: *ref_0
   /coverage/commercial:
     get:
       description: Retrieve state-by-state commercial coverage
-      operationId: CoverageAndUtilityService.retrieveCommercialCoverage
+      operationId: CoverageService.retrieveCommercialCoverage
       tags:
         - Coverage
       parameters: []
@@ -688,13 +761,29 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CommercialCoverage'
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/CommercialCoverage'
+              examples:
+                Example1:
+                  value:
+                    AL:
+                      limit_1:
+                        amount:
+                          min: 500000
+                          max: 25000000
+                      max_apr: 9999
+                      business_types:
+                        - corporation
+                        - partnership
+                        - llc
+                        - sole_proprietorship
       summary: Retrieve commercial lending coverage
       security: *ref_0
   /coverage/consumer:
     get:
       description: Retrieve state-by-state consumer coverage list
-      operationId: CoverageAndUtilityService.retrieveConsumerCoverage
+      operationId: CoverageService.retrieveConsumerCoverage
       tags:
         - Coverage
       parameters: []
@@ -703,7 +792,19 @@ paths:
           description: ''
           content:
             application/json:
-              schema: {}
+              schema:
+                type: object
+                additionalProperties:
+                  $ref: '#/components/schemas/ConsumerCoverage'
+              examples:
+                Example1:
+                  value:
+                    AL:
+                      limit_1:
+                        amount:
+                          min: 150000
+                          max: 5000000
+                      max_apr: 0
       summary: Retrieve consumer lending coverage
       security: *ref_0
   /rejection_reasons:
@@ -711,7 +812,7 @@ paths:
       description: >-
         Retrieve a list of valid reasons to reject an applicant, along with
         descriptions for each reason
-      operationId: CoverageAndUtilityService.retrieveRejectionReasons
+      operationId: CoverageService.retrieveRejectionReasons
       tags:
         - Coverage
       parameters: []
@@ -721,10 +822,66 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RejectionReasons'
+                $ref: '#/components/schemas/RetrieveRejectionReasonsResponse'
+              examples:
+                Example1:
+                  value:
+                    income_too_low: |
+                      Income does not meet requirement
+                    bank_balance_too_low: |
+                      Bank account balance is too low
+                    income_unpredictable: |
+                      Unable to predict regular pattern of income deposits
+                    user_account_duplicate: >
+                      Duplicate account (previously applied for a loan with a
+                      different email address)
+                    sdb_check_failed: |
+                      State database lending restriction
+                    bank_account_linking_error: |
+                      Unable to link to a supported banking institution
+                    mla_failed: >
+                      Under the Military Lending Act, loans to military
+                      personnel or their spouses and dependents cannot be made
+                      if the interest and expenses associated with the loan
+                      exceed an annual percentage rate (APR) of 36%. Due to
+                      these limits on military-related lending, we can't lend to
+                      members of the military or their spouses and dependents.
+                      Please feel free to contact us with any questions you may
+                      have about this notice!
+                    iddoc_failed: |
+                      Unable to verify identification documents
+                    no_checking_or_savings_data: >
+                      No data from supported financial institution. Unsupported
+                      financial institution is linked
+                    insufficient_bank_history: |
+                      Unable to pull enough bank history
+                    loan_location_no_license: >
+                      Unable to verify that your permanent residence is in a
+                      state
+                    address_invalid: |
+                      Unable to verify mailing address
+                    income_verification_failed: |
+                      Unable to verify qualified income over a sustained period
+                    stacking_behavior: >
+                      Recent deposits and withdrawals detected from other
+                      lenders
+                    ssn_verification_failed: |
+                      Unable to verify SSN number
+                    too_many_nsfs: >
+                      Multiple Returned checks or Insufficient Fund Fees
+                      detected
+                    fraud_risk_too_high: |
+                      Bank account has been flagged as potential fraud risk
+                    bankruptcy: |
+                      Outstanding balance from previous loan
+                    processor_suspended: |
+                      Payment processor is unable to authenticate user
+                    cash_flow_verification_failed: >
+                      Cash flow analysis - income funds are quickly depleted
+                      from bank account after income deposit
       summary: Retrieve rejection reasons
       security: *ref_0
-  /facilities/:
+  /facilities:
     post:
       description: >-
         A facility can be created for a given loan agreement with a status of
@@ -740,6 +897,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Facility'
+              examples:
+                Example1:
+                  value:
+                    terms:
+                      type: line_of_credit
+                      amount: 1000000
+                      apr: 0
+                      annual_fee: 0
+                      billing_cycle: 30
+                      finance_charge: 0
+                      grace_period: 21
+                      grace_period_interest_rate: 0
+                      interest_rate: 0
+                      late_payment_fee: 0
+                      origination_fee: 0
+                      term: 24
+                    id: fac_7264c6575a894548a386939434b0adf3
+                    application_id: app_ad1564ffb1d745f9ad482bb5182708e2
+                    borrower_id: bor_d965bea9f47a4b108562642dbb1dae9f
+                    loan_agreement_id: doc_234259b117854d0194bc5864a6c45b42
+                    credit_type: revolving_line_of_credit
+                    status: active
+                    created_on: '2023-01-17T04:59:21.773Z'
         '400':
           description: ''
           content:
@@ -754,6 +934,10 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/CreateFacilityRequest'
+            examples:
+              Example1:
+                value:
+                  loan_agreement_id: doc_234259b117854d0194bc5864a6c45b42
     get:
       description: List all facilities on your account
       operationId: FacilitiesService.listAll
@@ -769,6 +953,29 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Facility'
+              examples:
+                Example1:
+                  value:
+                    - terms:
+                        type: line_of_credit
+                        amount: 1000000
+                        apr: 0
+                        annual_fee: 0
+                        billing_cycle: 30
+                        finance_charge: 0
+                        grace_period: 21
+                        grace_period_interest_rate: 0
+                        interest_rate: 0
+                        late_payment_fee: 0
+                        origination_fee: 0
+                        term: 24
+                      id: fac_7264c6575a894548a386939434b0adf3
+                      application_id: app_ad1564ffb1d745f9ad482bb5182708e2
+                      borrower_id: bor_d965bea9f47a4b108562642dbb1dae9f
+                      loan_agreement_id: doc_234259b117854d0194bc5864a6c45b42
+                      credit_type: revolving_line_of_credit
+                      status: active
+                      created_on: '2023-01-17T04:59:21.773Z'
       summary: List all facilities
       security: *ref_0
   /facilities/{facility_id}/close:
@@ -783,6 +990,9 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/FacilityId'
+          examples:
+            Example1:
+              value: doc_234259b117854d0194bc5864a6c45b42
       responses:
         '200':
           description: ''
@@ -790,6 +1000,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Facility'
+              examples:
+                Example1:
+                  value:
+                    terms:
+                      type: line_of_credit
+                      amount: 1000000
+                      apr: 0
+                      annual_fee: 0
+                      billing_cycle: 30
+                      finance_charge: 0
+                      grace_period: 21
+                      grace_period_interest_rate: 0
+                      interest_rate: 0
+                      late_payment_fee: 0
+                      origination_fee: 0
+                      term: 24
+                    id: fac_7264c6575a894548a386939434b0adf3
+                    application_id: app_ad1564ffb1d745f9ad482bb5182708e2
+                    borrower_id: bor_d965bea9f47a4b108562642dbb1dae9f
+                    loan_agreement_id: doc_234259b117854d0194bc5864a6c45b42
+                    credit_type: revolving_line_of_credit
+                    status: closed
+                    created_on: '2023-01-17T04:59:21.773Z'
         '400':
           description: ''
           content:
@@ -798,12 +1031,6 @@ paths:
                 $ref: '#/components/schemas/FacilityCannotBeClosed'
       summary: Close a facility
       security: *ref_0
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CloseFacilityRequest'
   /facilities/{facility_id}:
     get:
       description: Retrieve a facility by its id
@@ -817,6 +1044,9 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/FacilityId'
+          examples:
+            Example1:
+              value: doc_234259b117854d0194bc5864a6c45b42
       responses:
         '200':
           description: ''
@@ -824,6 +1054,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Facility'
+              examples:
+                Example1:
+                  value:
+                    terms:
+                      type: line_of_credit
+                      amount: 1000000
+                      apr: 0
+                      annual_fee: 0
+                      billing_cycle: 30
+                      finance_charge: 0
+                      grace_period: 21
+                      grace_period_interest_rate: 0
+                      interest_rate: 0
+                      late_payment_fee: 0
+                      origination_fee: 0
+                      term: 24
+                    id: fac_7264c6575a894548a386939434b0adf3
+                    application_id: app_ad1564ffb1d745f9ad482bb5182708e2
+                    borrower_id: bor_d965bea9f47a4b108562642dbb1dae9f
+                    loan_agreement_id: doc_234259b117854d0194bc5864a6c45b42
+                    credit_type: revolving_line_of_credit
+                    status: active
+                    created_on: '2023-01-17T04:59:21.773Z'
         '400':
           description: ''
           content:
@@ -832,7 +1085,7 @@ paths:
                 $ref: '#/components/schemas/FacilityCannotBeClosed'
       summary: Retrieve a facility
       security: *ref_0
-  /loan_agreements/:
+  /loan_agreements:
     post:
       description: >-
         A loan agreement can be created for an application with a status of
@@ -848,6 +1101,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LoanAgreement'
+              examples:
+                Example1:
+                  value:
+                    status: pending_signature
+                    id: doc_43da3b3f95c745e1985a71e9a00d6c27
+                    application_id: app_a9d2f388030d4f4296f80fc327e08d0d
+                    document_url: >-
+                      https://production-formapi-docs.s3.amazonaws.com/store/acc_QqdcDH47A63qKZbK3S/templates/tpl_4zqGxezHzrfqDaxGr2/submissions/sub_J9PbHbXYbL4jzRxc3R.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJESVN6QC4ACN3XSQ%2F20221231%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20221231T204739Z&X-Amz-Expires=900&X-Amz-SignedHeaders=host&X-Amz-Signature=cf0c6429ef72ca06d861cb912f5d1cf376a5c26c7f904aaa9bf08f10103785bd
+                    created_on: '2022-12-31T20:47:38.152Z'
         '400':
           description: ''
           content:
@@ -861,7 +1123,19 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateLoanAgreementRequest'
+              type: object
+              properties:
+                application_id:
+                  $ref: '#/components/schemas/ApplicationId'
+                  description: >-
+                    The `application_id` of the application to create the loan
+                    agreement for
+              required:
+                - application_id
+            examples:
+              Example1:
+                value:
+                  application_id: app_a9d2f388030d4f4296f80fc327e08d0d
     get:
       description: List all loan agreements on your account
       operationId: LoansService.getAll
@@ -877,6 +1151,15 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/LoanAgreement'
+              examples:
+                Example1:
+                  value:
+                    - status: pending_signature
+                      id: doc_43da3b3f95c745e1985a71e9a00d6c27
+                      application_id: app_a9d2f388030d4f4296f80fc327e08d0d
+                      document_url: >-
+                        https://production-formapi-docs.s3.amazonaws.com/store/acc_QqdcDH47A63qKZbK3S/templates/tpl_4zqGxezHzrfqDaxGr2/submissions/sub_J9PbHbXYbL4jzRxc3R.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJESVN6QC4ACN3XSQ%2F20221231%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20221231T204739Z&X-Amz-Expires=900&X-Amz-SignedHeaders=host&X-Amz-Signature=cf0c6429ef72ca06d861cb912f5d1cf376a5c26c7f904aaa9bf08f10103785bd
+                      created_on: '2022-12-31T20:47:38.152Z'
       summary: List all loan agreements
       security: *ref_0
   /loan_agreements/{loan_agreement_id}/sign:
@@ -893,6 +1176,9 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/LoanAgreementId'
+          examples:
+            Example1:
+              value: doc_96d13bec673c4eba8d44c9cda3bbb811
       responses:
         '200':
           description: ''
@@ -900,6 +1186,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SignLoanAgreementResponse'
+              examples:
+                Example1:
+                  value:
+                    status: signed
+                    id: doc_96d13bec673c4eba8d44c9cda3bbb811
+                    application_id: app_a9d2f388030d4f4296f80fc327e08d0d
+                    signature_timestamp: '2022-12-31T21:10:47.610Z'
+                    document_url: >-
+                      https://production-formapi-docs.s3.amazonaws.com/store/acc_QqdcDH47A63qKZbK3S/templates/tpl_4zqGxezHzrfqDaxGr2/submissions/sub_jQRTtHgekEbdJTxtsR.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJESVN6QC4ACN3XSQ%2F20221231%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20221231T210718Z&X-Amz-Expires=900&X-Amz-SignedHeaders=host&X-Amz-Signature=9ead57dba9e8e2179a3e9950f1c7c19fe8b10dfbc55f5ce09228bd216e4cdd73
+                    created_on: '2022-12-31T21:07:16.642Z'
         '400':
           description: ''
           content:
@@ -908,12 +1204,6 @@ paths:
                 $ref: '#/components/schemas/FacilityCannotBeClosed'
       summary: Sign a loan agreement
       security: *ref_0
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SignLoanAgreementRequest'
   /loan_agreements/{loan_agreement_id}:
     get:
       description: Retrieve a loan agreement by its id
@@ -926,6 +1216,9 @@ paths:
           required: true
           schema:
             $ref: '#/components/schemas/LoanAgreementId'
+          examples:
+            Example1:
+              value: doc_43da3b3f95c745e1985a71e9a00d6c27
       responses:
         '200':
           description: ''
@@ -933,6 +1226,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/LoanAgreement'
+              examples:
+                Example1:
+                  value:
+                    status: pending_signature
+                    id: doc_43da3b3f95c745e1985a71e9a00d6c27
+                    application_id: app_a9d2f388030d4f4296f80fc327e08d0d
+                    document_url: >-
+                      https://production-formapi-docs.s3.amazonaws.com/store/acc_QqdcDH47A63qKZbK3S/templates/tpl_4zqGxezHzrfqDaxGr2/submissions/sub_J9PbHbXYbL4jzRxc3R.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJESVN6QC4ACN3XSQ%2F20221231%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20221231T204739Z&X-Amz-Expires=900&X-Amz-SignedHeaders=host&X-Amz-Signature=cf0c6429ef72ca06d861cb912f5d1cf376a5c26c7f904aaa9bf08f10103785bd
+                    created_on: '2022-12-31T20:47:38.152Z'
         '400':
           description: ''
           content:
@@ -972,6 +1274,26 @@ components:
       required:
         - borrower_id
         - credit_type
+    Offer:
+      oneOf:
+        - type: object
+          allOf:
+            - $ref: '#/components/schemas/LineOfCreditOffer'
+            - type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - line_of_credit
+        - type: object
+          allOf:
+            - $ref: '#/components/schemas/LoanOffer'
+            - type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - loan
     Application:
       type: object
       properties:
@@ -980,24 +1302,40 @@ components:
         borrower_id:
           $ref: '#/components/schemas/ConsumerBorrowerId'
           description: The `borrower_id` of the borrower the application belongs to
-        credit_type:
-          $ref: '#/components/schemas/CreditType'
-          description: The type of credit product.
-        status:
-          $ref: '#/components/schemas/ApplicationStatus'
         created_on:
           type: string
           format: date-time
           description: Timestamp the application object is created on
+        credit_type:
+          $ref: '#/components/schemas/CreditType'
+          description: The type of credit product.
         decisioned_on:
           type: string
           format: date-time
           description: Timestamp when the application is either approved or rejected on
         offer:
-          $ref: '#/components/schemas/LoanOffer'
+          $ref: '#/components/schemas/Offer'
           description: >-
             If the application is approved, an object containing the credit
             offer details
+        rejection_reasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/RejectionReason'
+          description: >
+            If the application is rejected, a list containing 1-4 rejection
+            reason(s).  The Rejection Reasons endpoint provides a list of valid
+            reasons and descriptors
+        requested_amount:
+          type: integer
+          description: >
+            If the borrower requests an amount in their application, the
+            requested  loan or credit line amount in cents (e.g. 500000 for
+            $5,000)
+        status:
+          $ref: '#/components/schemas/ApplicationStatus'
+      required:
+        - status
     LineOfCreditOffer:
       type: object
       properties:
@@ -1006,17 +1344,14 @@ components:
           description: >-
             The amount (in cents) of the credit line offer (e.g. '200000' for
             $2,000.00)
-          example: 1000000
         apr:
           type: integer
           description: >-
             The apr (in basis points) of the credit line offer (e.g. '750' for
             7.50%)
-          example: 0
         annual_fee:
           type: integer
           description: The annual fee charged for the credit line (e.g. '5000' for $50.00)
-          example: 0
         billing_cycle:
           type: integer
           description: >
@@ -1024,19 +1359,16 @@ components:
             next statement's closing date. 
 
             For consumer lines of credit, the minimum is '21'
-          example: 30
         finance_charge:
           type: integer
           description: >-
             If your platform charges a monthly finance charge for access to the
             line, the amount in cents
-          example: 0
         grace_period:
           type: integer
           description: >-
             The time in days between the end of a billing cycle and the bill's
             due date. For consumer lines of credit, the minimum is '21'
-          example: 21
         grace_period_interest_rate:
           type: integer
           description: >-
@@ -1047,7 +1379,6 @@ components:
           description: >-
             The interest rate (in basis points) of the loan or credit line offer
             (e.g. '750' for 7.50%)
-          example: 0
         introductory_offer_interest_rate:
           type: integer
           description: >-
@@ -1063,23 +1394,19 @@ components:
           description: >-
             The fee charged if a borrower misses the payment due date, in cents
             (e.g. '2500' for $25.00)
-          example: 0
         origination_fee:
           type: integer
           description: >-
             The origination fee charged to originate the line in cents (e.g.
             '20000' for $200)
-          example: 0
         term:
           type: integer
           description: The term of the line in months
-          example: 24
       required:
         - amount
         - apr
         - annual_fee
         - billing_cycle
-        - finance_charge
         - grace_period
         - interest_rate
         - late_payment_fee
@@ -1119,13 +1446,6 @@ components:
         - repayment_frequency
         - late_payment_fee
         - term
-    RejectRequest:
-      type: object
-      properties:
-        rejection_reason:
-          $ref: '#/components/schemas/RejectionReason'
-      required:
-        - rejection_reason
     RejectionReason:
       type: string
       enum:
@@ -1157,39 +1477,32 @@ components:
           description: The id of the borrower you're requesting to retrieve
       required:
         - application_id
-    ApproveApplicationRequest:
-      type: object
-      properties:
-        offer:
-          $ref: '#/components/schemas/LineOfCreditOffer'
-        id:
-          $ref: '#/components/schemas/ApplicationId'
-        borrower_id:
-          $ref: '#/components/schemas/ConsumerBorrowerId'
-        credit_type:
-          $ref: '#/components/schemas/CreditType'
-        status:
-          $ref: '#/components/schemas/ApplicationStatus'
-        created_on:
-          type: string
-          format: date-time
-        decisioned_on:
-          type: string
-          format: date-time
-      required:
-        - offer
-        - id
-        - borrower_id
-        - credit_type
-        - status
-        - created_on
-        - decisioned_on
     BusinessBorrowerId:
       type: string
     BeneficialOwnerId:
       type: string
     ConsumerBorrowerId:
       type: string
+    Borrower:
+      oneOf:
+        - type: object
+          allOf:
+            - $ref: '#/components/schemas/BusinessBorrower'
+            - type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - business
+        - type: object
+          allOf:
+            - $ref: '#/components/schemas/ConsumerBorrower'
+            - type: object
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - consumer
     BusinessBorrowerRequest:
       type: object
       properties:
@@ -1626,13 +1939,56 @@ components:
       properties: {}
       allOf:
         - $ref: '#/components/schemas/BaseErrorBody'
-    CommercialCoverage: {}
-    RejectionReasons:
-      type: array
-      items:
-        type: object
-        additionalProperties:
-          type: string
+    CommercialCoverage:
+      type: object
+      properties:
+        max_apr:
+          type: integer
+        business_types:
+          type: array
+          items:
+            $ref: '#/components/schemas/BussinessType'
+        limit_1:
+          $ref: '#/components/schemas/CoverageLimit'
+      required:
+        - limit_1
+    ConsumerCoverage:
+      type: object
+      properties:
+        max_apr:
+          type: integer
+        limit_1:
+          $ref: '#/components/schemas/CoverageLimit'
+      required:
+        - limit_1
+    BussinessType:
+      type: string
+      enum:
+        - corporation
+        - partnership
+        - llc
+        - sole_proprietorship
+    CoverageLimit:
+      type: object
+      properties:
+        amount:
+          $ref: '#/components/schemas/CoverageAmount'
+      required:
+        - amount
+    CoverageAmount:
+      type: object
+      properties:
+        min:
+          type: integer
+        max:
+          type: integer
+      required:
+        - min
+        - max
+    RetrieveRejectionReasonsResponse:
+      type: object
+      additionalProperties:
+        type: string
     FacilityId:
       type: string
     Facility:
@@ -1653,6 +2009,7 @@ components:
           description: >-
             The `loan_agreement_id` of the corresponding loan agreement the
             facility is for
+          example: doc_234259b117854d0194bc5864a6c45b42
         credit_type:
           $ref: '#/components/schemas/CreditType'
           description: The type of credit production.
@@ -1660,11 +2017,12 @@ components:
           type: string
           format: date-time
           description: Timestamp the loan agreement object is created on
+          example: '2023-01-17T04:59:21.773Z'
         status:
           $ref: '#/components/schemas/CreditStatus'
           description: The status of the facility.
         terms:
-          $ref: '#/components/schemas/LineOfCreditOffer'
+          $ref: '#/components/schemas/Offer'
           description: An object containing a summary of the terms of the facility.
       required:
         - id
@@ -1690,26 +2048,8 @@ components:
             for
       required:
         - loan_agreement_id
-    CloseFacilityRequest:
-      type: object
-      properties:
-        facility_id:
-          $ref: '#/components/schemas/FacilityId'
-          description: The `facility_id` of the facility to close
-      required:
-        - facility_id
     LoanAgreementId:
       type: string
-    CreateLoanAgreementRequest:
-      type: object
-      properties:
-        application_id:
-          $ref: '#/components/schemas/ApplicationId'
-          description: >-
-            The `application_id` of the application to create the loan agreement
-            for
-      required:
-        - application_id
     LoanAgreement:
       type: object
       properties:
@@ -1720,12 +2060,16 @@ components:
           description: >-
             The `application_id` of the corresponding loan application the
             agreement is for
+          example: app_a9d2f388030d4f4296f80fc327e08d0d
         created_on:
           type: string
           description: Timestamp the loan agreement object is created on
+          example: '2022-12-31T20:47:38.152Z'
         document_url:
           type: string
           description: Url where the loan agreement document is hosted
+          example: >-
+            https://production-formapi-docs.s3.amazonaws.com/store/acc_QqdcDH47A63qKZbK3S/templates/tpl_4zqGxezHzrfqDaxGr2/submissions/sub_J9PbHbXYbL4jzRxc3R.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJESVN6QC4ACN3XSQ%2F20221231%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20221231T204739Z&X-Amz-Expires=900&X-Amz-SignedHeaders=host&X-Amz-Signature=cf0c6429ef72ca06d861cb912f5d1cf376a5c26c7f904aaa9bf08f10103785bd
         signature_timestamp:
           type: string
           description: Timestamp of when e-signature is completed
@@ -1737,7 +2081,6 @@ components:
         - application_id
         - created_on
         - document_url
-        - signature_timestamp
         - status
     LoanAgreementStatus:
       type: string
@@ -1745,13 +2088,6 @@ components:
         - pending_signature
         - signed
         - expired
-    SignLoanAgreementRequest:
-      type: object
-      properties:
-        loan_agreement_id:
-          $ref: '#/components/schemas/LoanAgreementId'
-      required:
-        - loan_agreement_id
     SignLoanAgreementResponse:
       type: object
       properties:
@@ -1764,11 +2100,15 @@ components:
         signature_timestamp:
           type: string
           format: date-time
+          example: '2022-12-31T21:10:47.610Z'
         document_url:
           type: string
+          example: >-
+            https://production-formapi-docs.s3.amazonaws.com/store/acc_QqdcDH47A63qKZbK3S/templates/tpl_4zqGxezHzrfqDaxGr2/submissions/sub_jQRTtHgekEbdJTxtsR.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJESVN6QC4ACN3XSQ%2F20221231%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20221231T210718Z&X-Amz-Expires=900&X-Amz-SignedHeaders=host&X-Amz-Signature=9ead57dba9e8e2179a3e9950f1c7c19fe8b10dfbc55f5ce09228bd216e4cdd73
         created_on:
           type: string
           format: date-time
+          example: '2022-12-31T21:07:16.642Z'
       required:
         - status
         - id
