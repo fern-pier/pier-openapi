@@ -2124,14 +2124,4 @@ servers:
   - url: https://production.pier-finance.com/api
     description: Production
   - url: https://sandbox.pier-finance.com/api
-    description: >-
-      Sandbox (The sandbox is designed to mimic the production environment, with
-      a few exceptions. 
-
-      Loan agreements created in the sandbox will have large `draft` watermarks
-      and funds flows will only occur in production. 
-
-      Sandbox API keys are prefixed with `test_` while production API keys are 
-      prefixed with `prod_`.
-
-      )
+    description: Sandbox
